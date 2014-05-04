@@ -12,9 +12,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.GraphViewSeries;
-import com.jjoe64.graphview.LineGraphView;
+//import com.jjoe64.graphview.GraphView;
+//import com.jjoe64.graphview.GraphViewSeries;
+//import com.jjoe64.graphview.LineGraphView;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -39,8 +39,8 @@ public class MainActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // init example series data
-/*        //GraphViewSeries exampleSeries = new GraphViewSeries(new GraphView.GraphViewData[] {
+/*        // init example series data
+        GraphViewSeries exampleSeries = new GraphViewSeries(new GraphView.GraphViewData[] {
                 new GraphView.GraphViewData(1, 2.0d)
                 , new GraphView.GraphViewData(2, 1.5d)
                 , new GraphView.GraphViewData(3, 2.5d)
@@ -55,7 +55,7 @@ public class MainActivity extends ActionBarActivity
 
 
         LinearLayout layout = (LinearLayout) findViewById(R.id.test);
-        layout.addView(graphView); */
+        layout.addView(graphView);*/
     }
 
 
@@ -84,10 +84,7 @@ public class MainActivity extends ActionBarActivity
     {
         switch (v.getId()) {
             case R.id.buttonTempAttic:
-
-                TextView textViewTotal = (TextView)findViewById( R.id.textViewHeader );
-                textViewTotal.setText("Attic");
-
+                new ReadTemperatureIdJSONFeedTask().execute("http://racetime.no-ip.org:8080/tellstickservice/Temperature/9/12");
                 break;
             case R.id.buttonTempBasement:
                 // do something else
@@ -121,7 +118,7 @@ public class MainActivity extends ActionBarActivity
         Button button = (Button)v;
         CharSequence text = button.getText();
 
-        new ReadTemperatureJSONFeedTask().execute("http://racetime.no-ip.org:8080/tellstickservice/Sensors");
+        new ReadTemperatureJSONFeedTask().execute("http://racetime.no-ip.org:8080/tellstickservice/Temperature");
     }
 
     public String readJSONFeed(String URL)
@@ -171,16 +168,82 @@ public class MainActivity extends ActionBarActivity
             try
             {
                 JSONArray jsonArray = new JSONArray(result);
-                //JSONObject temperatureItems = new JSONObject(jsonObject.getString("weatherObservation"));
 
-                JSONObject jsonObject = jsonArray.getJSONObject(0);
-                String id = jsonObject.getString("sensorId");
-                String name = jsonObject.getString("sensorName");
+                for(int i = 0; i < jsonArray.length(); i++)
+                {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String sensorId = jsonObject.getString("sensorId");
+                    String temperature = jsonObject.getString("temperature");
+                    String humidity = jsonObject.getString("humidity");
+                    String createdDate = jsonObject.getString("createDate");
 
-                TextView textViewTotal = (TextView)findViewById( R.id.textViewHeader );
-                textViewTotal.setText(id + " - " + name);
+                    TextView textViewTotal = null;
+                    if(sensorId == "140")
+                        textViewTotal = (TextView)findViewById(R.id.textViewTempOutside2);
+                    else if(sensorId.contains("139"))
+                        textViewTotal = (TextView)findViewById(R.id.textViewTempUnderhouse);
+                    else if(sensorId.contains("180"))
+                        textViewTotal = (TextView)findViewById(R.id.textViewTempPadio);
+                    else if(sensorId.contains("9"))
+                        textViewTotal = (TextView)findViewById(R.id.textViewTempAttic);
+                    else if(sensorId.contains("151"))
+                        textViewTotal = (TextView)findViewById(R.id.textViewTempInside);
+                    else if(sensorId.contains("181"))
+                        textViewTotal = (TextView)findViewById(R.id.textViewTempOutside1);
+                    else if(sensorId.contains("43"))
+                        textViewTotal = (TextView)findViewById(R.id.textViewTempBasement);
 
-                //Toast.makeText(getBaseContext(), , Toast.LENGTH_SHORT).show();
+                    if(textViewTotal != null)
+                        textViewTotal.setText(temperature);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.d("ReadTemperatureJSONFeedTask", e.getLocalizedMessage());
+            }
+        }
+    }
+
+    private class ReadTemperatureIdJSONFeedTask extends AsyncTask<String, Void, String>
+    {
+        protected String doInBackground(String... urls)
+        {
+            return readJSONFeed(urls[0]);
+        }
+
+        protected void onPostExecute(String result)
+        {
+            try
+            {
+                JSONArray jsonArray = new JSONArray(result);
+
+                for(int i = 0; i < jsonArray.length(); i++)
+                {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String sensorId = jsonObject.getString("sensorId");
+                    String temperature = jsonObject.getString("temperature");
+                    String humidity = jsonObject.getString("humidity");
+                    String createdDate = jsonObject.getString("createDate");
+
+                    TextView textViewTotal = null;
+                    if(sensorId == "140")
+                        textViewTotal = (TextView)findViewById(R.id.textViewTempOutside2);
+                    else if(sensorId.contains("139"))
+                        textViewTotal = (TextView)findViewById(R.id.textViewTempUnderhouse);
+                    else if(sensorId.contains("180"))
+                        textViewTotal = (TextView)findViewById(R.id.textViewTempPadio);
+                    else if(sensorId.contains("9"))
+                        textViewTotal = (TextView)findViewById(R.id.textViewTempAttic);
+                    else if(sensorId.contains("151"))
+                        textViewTotal = (TextView)findViewById(R.id.textViewTempInside);
+                    else if(sensorId.contains("181"))
+                        textViewTotal = (TextView)findViewById(R.id.textViewTempOutside1);
+                    else if(sensorId.contains("43"))
+                        textViewTotal = (TextView)findViewById(R.id.textViewTempBasement);
+
+                    if(textViewTotal != null)
+                        textViewTotal.setText(temperature);
+                }
             }
             catch (Exception e)
             {

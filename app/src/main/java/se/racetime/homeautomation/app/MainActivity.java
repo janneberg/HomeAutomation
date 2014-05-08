@@ -1,5 +1,6 @@
 package se.racetime.homeautomation.app;
 
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -7,7 +8,10 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -17,6 +21,7 @@ import android.widget.Toast;
 //import com.jjoe64.graphview.GraphViewSeries;
 //import com.jjoe64.graphview.LineGraphView;
 
+import com.jjoe64.graphview.CustomLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.LineGraphView;
@@ -44,42 +49,27 @@ public class MainActivity extends ActionBarActivity
 {
     enum HttpTask { basic, idHour };
     GraphView graphView;
+    float x1,x2;
+    float y1, y2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_main);
 
         graphView = new LineGraphView(this,"Temperature");
-
-        /*
-        {
-            @Override
-            protected String formatLabel(double value, boolean isValueX)
-            {
-                if (isValueX)   // transform number to time
-                    return dateTimeFormatter.format(new Date((long) value*1000));
-                else
-                    return super.formatLabel(value, isValueX);
-            }
-        };*/
-
-
-        /*        // init example series data
-
-
-
-
-        LinearLayout layout = (LinearLayout) findViewById(R.id.test);
-        layout.addView(graphView);*/
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
@@ -97,41 +87,100 @@ public class MainActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
+    // onTouchEvent () method gets called when User performs any touch event on screen
+    // Method to handle touch event like left to right swap and right to left swap
+    public boolean onTouchEvent(MotionEvent touchevent)
+    {
+        switch (touchevent.getAction())
+        {
+            // when user first touches the screen we get x and y coordinate
+            case MotionEvent.ACTION_DOWN:
+            {
+                x1 = touchevent.getX();
+                y1 = touchevent.getY();
+                break;
+            }
+            case MotionEvent.ACTION_UP:
+            {
+                x2 = touchevent.getX();
+                y2 = touchevent.getY();
+
+                //if left to right sweep event on screen
+                if (x1 < x2)
+                {
+                    Toast.makeText(this, "Left to Right Swap Performed", Toast.LENGTH_LONG).show();
+                }
+
+                // if right to left sweep event on screen
+                if (x1 > x2)
+                {
+                    Toast.makeText(this, "Right to Left Swap Performed", Toast.LENGTH_LONG).show();
+                }
+
+                // if UP to Down sweep event on screen
+                if (y1 < y2)
+                {
+                    Toast.makeText(this, "UP to Down Swap Performed", Toast.LENGTH_LONG).show();
+                }
+
+                //if Down to UP sweep event on screen
+                if (y1 > y2)
+                {
+                    Toast.makeText(this, "Down to UP Swap Performed", Toast.LENGTH_LONG).show();
+                }
+                break;
+            }
+        }
+        return false;
+    }
+
     public void onButtonPress(View v)
     {
+        TextView textViewGraphHeader = (TextView)findViewById( R.id.textViewGraphHeader );
+
         switch (v.getId()) {
             case R.id.buttonTempAttic:
+                textViewGraphHeader.setText("TempAttic");
                 new ReadTemperatureJSONFeedTask(HttpTask.idHour).execute("http://racetime.no-ip.org:8080/tellstickservice/Temperature/9/12");
                 break;
             case R.id.buttonTempBasement:
+                textViewGraphHeader.setText("TempBasement");
                 new ReadTemperatureJSONFeedTask(HttpTask.idHour).execute("http://racetime.no-ip.org:8080/tellstickservice/Temperature/43/12");
                 break;
             case R.id.buttonTempInside:
+                textViewGraphHeader.setText("TempInside");
                 new ReadTemperatureJSONFeedTask(HttpTask.idHour).execute("http://racetime.no-ip.org:8080/tellstickservice/Temperature/151/12");
                 break;
             case R.id.buttonTempOutside1:
+                textViewGraphHeader.setText("TempOutside1");
                 new ReadTemperatureJSONFeedTask(HttpTask.idHour).execute("http://racetime.no-ip.org:8080/tellstickservice/Temperature/181/12");
                 break;
             case R.id.buttonTempOutside2:
+                textViewGraphHeader.setText("TempOutside2");
                 new ReadTemperatureJSONFeedTask(HttpTask.idHour).execute("http://racetime.no-ip.org:8080/tellstickservice/Temperature/140/12");
                 break;
             case R.id.buttonTempPadio:
+                textViewGraphHeader.setText("TempPadio");
                 new ReadTemperatureJSONFeedTask(HttpTask.idHour).execute("http://racetime.no-ip.org:8080/tellstickservice/Temperature/180/12");
                 break;
             case R.id.buttonTempUnderhouse:
+                textViewGraphHeader.setText("TempUnderhouse");
                 new ReadTemperatureJSONFeedTask(HttpTask.idHour).execute("http://racetime.no-ip.org:8080/tellstickservice/Temperature/139/12");
                 break;
         }
 
         //int number = Integer.parseInt(text.toString());
         //total += number;
-
-        //TextView textViewTotal = (TextView)findViewById( R.id.textViewTotal );
-        //textViewTotal.setText(Integer.toString(total));
     }
 
     public void onButtonUpdatePress(View v)
     {
+        Integer width = graphView.getWidth();
+        Integer height = graphView.getHeight();
+
+        Integer w = graphView.getMeasuredWidth();
+        Integer h = graphView.getMeasuredHeight();
+
         Button button = (Button)v;
         CharSequence text = button.getText();
 
@@ -209,8 +258,6 @@ public class MainActivity extends ActionBarActivity
             {
                 JSONArray jsonArray = new JSONArray(result);
 
-                //final java.text.DateFormat dateTimeFormatter = DateFormat.getTimeFormat(mActivity);
-
                 GraphView.GraphViewData graphViewData[] = new GraphView.GraphViewData[jsonArray.length()];
 
                 for(int i = 0; i < jsonArray.length(); i++)
@@ -228,9 +275,34 @@ public class MainActivity extends ActionBarActivity
                     graphViewData[i] = new GraphView.GraphViewData(millisecond, new Double(temperature.replace(',','.')));
                 }
 
-
+                graphView.removeAllSeries();
                 GraphViewSeries exampleSeries = new GraphViewSeries(graphViewData);  // init data
                 graphView.addSeries(exampleSeries); // data
+
+                graphView.getGraphViewStyle().setGridColor(Color.GREEN);
+                graphView.getGraphViewStyle().setHorizontalLabelsColor(Color.BLACK);
+                graphView.getGraphViewStyle().setVerticalLabelsColor(Color.BLACK);
+                graphView.getGraphViewStyle().setTextSize((float) 12.0);
+                graphView.getGraphViewStyle().setNumHorizontalLabels(5);
+                graphView.getGraphViewStyle().setNumVerticalLabels(5);
+                graphView.getGraphViewStyle().setVerticalLabelsWidth(20);
+                //graphView.setManualYAxis(true);
+                //graphView.setManualYAxisBounds(20.0, -5);
+                graphView.setTitle("");
+
+                // date as label formatter
+                final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+                graphView.setCustomLabelFormatter(new CustomLabelFormatter()
+                {
+                    @Override
+                    public String formatLabel(double value, boolean isValueX) {
+                        if (isValueX) {
+                            Date d = new Date((long) value);
+                            return dateFormat.format(d);
+                        }
+                        return null; // let graphview generate Y-axis label for us
+                    }
+                });
 
                 LinearLayout layout = (LinearLayout) findViewById(R.id.test);
                 layout.addView(graphView);

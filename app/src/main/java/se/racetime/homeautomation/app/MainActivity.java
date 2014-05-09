@@ -1,7 +1,10 @@
 package se.racetime.homeautomation.app;
 
+import android.app.ActionBar;
+import android.app.FragmentTransaction;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.format.DateFormat;
@@ -45,8 +48,26 @@ import java.util.Date;
 import java.util.logging.Logger;
 
 
-public class MainActivity extends ActionBarActivity
+public class MainActivity extends FragmentActivity implements ActionBar.TabListener
 {
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction)
+    {
+
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction)
+    {
+
+    }
+
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction)
+    {
+
+    }
+
     enum HttpTask { basic, idHour };
     GraphView graphView;
     float x1,x2;

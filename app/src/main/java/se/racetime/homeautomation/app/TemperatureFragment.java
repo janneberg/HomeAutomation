@@ -1,6 +1,7 @@
 package se.racetime.homeautomation.app;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -40,73 +41,24 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
-/**
- * A simple {@link android.support.v4.app.Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link TemperatureFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link TemperatureFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
-
-public class TemperatureFragment extends Fragment
+public class TemperatureFragment extends Fragment implements View.OnClickListener
 {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    Activity activity;
+    View view;
+    //Button btnUpdate, btnTempAttic;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment TemperatureFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static TemperatureFragment newInstance(String param1, String param2)
-    {
-        TemperatureFragment fragment = new TemperatureFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-    public TemperatureFragment()
-    {
-        // Required empty public constructor
-    }
+    enum HttpTask { basic, idHour };
+    GraphView graphView;
+    float x1,x2;
+    float y1, y2;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        super.onCreate(savedInstanceState);
         activity = getActivity();
 
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null)
-        {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
-        /*requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        setContentView(R.layout.activity_main);*/
-
         graphView = new LineGraphView(activity, "Temperature");
-
     }
 
     @Override
@@ -114,130 +66,46 @@ public class TemperatureFragment extends Fragment
     {
         // Inflate the layout for this fragment
         view =  inflater.inflate(R.layout.fragment_temperature, container, false);
+
+        Button btnUpdate = (Button) view.findViewById(R.id.buttonUpdate);
+        btnUpdate.setOnClickListener(this);
+
+        Button btnTempAttic = (Button) view.findViewById(R.id.buttonTempAttic);
+        btnTempAttic.setOnClickListener(this);
+
+        Button btnTempBasement = (Button) view.findViewById(R.id.buttonTempBasement);
+        btnTempBasement.setOnClickListener(this);
+
+        Button btnTempInside = (Button) view.findViewById(R.id.buttonTempInside);
+        btnTempInside.setOnClickListener(this);
+
+        Button btnTempOutside1 = (Button) view.findViewById(R.id.buttonTempOutside1);
+        btnTempOutside1.setOnClickListener(this);
+
+        Button btnTempOutside2 = (Button) view.findViewById(R.id.buttonTempOutside2);
+        btnTempOutside2.setOnClickListener(this);
+
+        Button btnTempPadio = (Button) view.findViewById(R.id.buttonTempPadio);
+        btnTempPadio.setOnClickListener(this);
+
+        Button btnTempUnderhouse = (Button) view.findViewById(R.id.buttonTempUnderhouse);
+        btnTempUnderhouse.setOnClickListener(this);
+
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri)
-    {
-        if (mListener != null)
-        {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
-    public void onAttach(Activity activity)
+    public void onClick(View v)
     {
-        super.onAttach(activity);
-        try
+        switch (v.getId())
         {
-            mListener = (OnFragmentInteractionListener) activity;
-        }
-        catch (ClassCastException e)
-        {
-            throw new ClassCastException(activity.toString() + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach()
-    {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener
-    {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////
-
-    enum HttpTask { basic, idHour };
-    GraphView graphView;
-    float x1,x2;
-    float y1, y2;
-    Activity activity;
-    View view;
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }*/
-
-    // onTouchEvent () method gets called when User performs any touch event on screen
-    // Method to handle touch event like left to right swap and right to left swap
-    public boolean onTouchEvent(MotionEvent touchevent)
-    {
-        switch (touchevent.getAction())
-        {
-            // when user first touches the screen we get x and y coordinate
-            case MotionEvent.ACTION_DOWN:
-            {
-                x1 = touchevent.getX();
-                y1 = touchevent.getY();
+            case R.id.buttonUpdate:
+                onButtonUpdatePress(v);
                 break;
-            }
-            case MotionEvent.ACTION_UP:
-            {
-                x2 = touchevent.getX();
-                y2 = touchevent.getY();
-
-                //if left to right sweep event on screen
-                if (x1 < x2)
-                {
-                    Toast.makeText(activity, "Left to Right Swap Performed", Toast.LENGTH_LONG).show();
-                }
-
-                // if right to left sweep event on screen
-                if (x1 > x2)
-                {
-                    Toast.makeText(activity, "Right to Left Swap Performed", Toast.LENGTH_LONG).show();
-                }
-
-                // if UP to Down sweep event on screen
-                if (y1 < y2)
-                {
-                    Toast.makeText(activity, "UP to Down Swap Performed", Toast.LENGTH_LONG).show();
-                }
-
-                //if Down to UP sweep event on screen
-                if (y1 > y2)
-                {
-                    Toast.makeText(activity, "Down to UP Swap Performed", Toast.LENGTH_LONG).show();
-                }
+            default:
+                onButtonPress(v);
                 break;
-            }
         }
-        return false;
     }
 
     public void onButtonPress(View v)
@@ -281,15 +149,6 @@ public class TemperatureFragment extends Fragment
 
     public void onButtonUpdatePress(View v)
     {
-        Integer width = graphView.getWidth();
-        Integer height = graphView.getHeight();
-
-        Integer w = graphView.getMeasuredWidth();
-        Integer h = graphView.getMeasuredHeight();
-
-        Button button = (Button)v;
-        CharSequence text = button.getText();
-
         new ReadTemperatureJSONFeedTask(HttpTask.basic).execute("http://racetime.no-ip.org:8080/tellstickservice/Temperature");
     }
 
@@ -401,8 +260,10 @@ public class TemperatureFragment extends Fragment
                 graphView.setCustomLabelFormatter(new CustomLabelFormatter()
                 {
                     @Override
-                    public String formatLabel(double value, boolean isValueX) {
-                        if (isValueX) {
+                    public String formatLabel(double value, boolean isValueX)
+                    {
+                        if (isValueX)
+                        {
                             Date d = new Date((long) value);
                             return dateFormat.format(d);
                         }
@@ -459,4 +320,80 @@ public class TemperatureFragment extends Fragment
             }
         }
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////
+/*
+
+
+    /*@Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }*/
+
+    /*
+    // onTouchEvent () method gets called when User performs any touch event on screen
+    // Method to handle touch event like left to right swap and right to left swap
+    public boolean onTouchEvent(MotionEvent touchevent)
+    {
+        switch (touchevent.getAction())
+        {
+            // when user first touches the screen we get x and y coordinate
+            case MotionEvent.ACTION_DOWN:
+            {
+                x1 = touchevent.getX();
+                y1 = touchevent.getY();
+                break;
+            }
+            case MotionEvent.ACTION_UP:
+            {
+                x2 = touchevent.getX();
+                y2 = touchevent.getY();
+
+                //if left to right sweep event on screen
+                if (x1 < x2)
+                {
+                    Toast.makeText(activity, "Left to Right Swap Performed", Toast.LENGTH_LONG).show();
+                }
+
+                // if right to left sweep event on screen
+                if (x1 > x2)
+                {
+                    Toast.makeText(activity, "Right to Left Swap Performed", Toast.LENGTH_LONG).show();
+                }
+
+                // if UP to Down sweep event on screen
+                if (y1 < y2)
+                {
+                    Toast.makeText(activity, "UP to Down Swap Performed", Toast.LENGTH_LONG).show();
+                }
+
+                //if Down to UP sweep event on screen
+                if (y1 > y2)
+                {
+                    Toast.makeText(activity, "Down to UP Swap Performed", Toast.LENGTH_LONG).show();
+                }
+                break;
+            }
+        }
+        return false;
+    }
+
+
+    */
 }

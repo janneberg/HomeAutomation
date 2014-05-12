@@ -21,9 +21,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import se.racetime.homeautomation.Com.Json;
+import se.racetime.homeautomation.adapter.TellstickServiceAdapter;
 
 public class TelephoneFragment extends Fragment
 {
@@ -31,6 +34,7 @@ public class TelephoneFragment extends Fragment
     View view;
     ListView lstViewPhone;
     enum HttpTask { standard, specific };
+    private ArrayList<HashMap> list;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -46,6 +50,10 @@ public class TelephoneFragment extends Fragment
         view = inflater.inflate(R.layout.fragment_telephone, container, false);
 
         lstViewPhone = (ListView) view.findViewById(R.id.listViewPhone);
+
+        //populateList();
+        TellstickServiceAdapter adapter = new TellstickServiceAdapter(activity, list);
+        lstViewPhone.setAdapter(adapter);
 
         return view;
     }
@@ -87,24 +95,27 @@ public class TelephoneFragment extends Fragment
             {
                 JSONArray jsonArray = new JSONArray(result);
 
-                GraphView.GraphViewData graphViewData[] = new GraphView.GraphViewData[jsonArray.length()];
-
-                for(int i = jsonArray.length() - 1; i > 0; i--)
+                for(int i = 0; i < jsonArray.length(); i++)
                 {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     String sensorId = jsonObject.getString("sensorId");
                     String temperature = jsonObject.getString("temperature");
                     String humidity = jsonObject.getString("humidity");
+
+                    HashMap<String, String> item = new HashMap<String, String>();
+
+
+                    //item.put()
+
                     String createdDate = jsonObject.getString("createDate");
 
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date date = sdf.parse(createdDate);
-                    long millisecond = date.getTime();
 
-                    graphViewData[i] = new GraphView.GraphViewData(millisecond, new Double(temperature.replace(',','.')));
+
                 }
 
-                LinearLayout layout = (LinearLayout) view.findViewById(R.id.test);
+                //list
+
+                //LinearLayout layout = (LinearLayout) view.findViewById(R.id.test);
                 //layout.addView(graphView);
             }
             catch (Exception e)

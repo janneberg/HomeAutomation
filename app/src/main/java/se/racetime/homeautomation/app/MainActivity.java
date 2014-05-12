@@ -2,51 +2,10 @@ package se.racetime.homeautomation.app;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
-import android.graphics.Color;
-import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.text.format.DateFormat;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
-//import com.jjoe64.graphview.GraphView;
-//import com.jjoe64.graphview.GraphViewSeries;
-//import com.jjoe64.graphview.LineGraphView;
-
-import com.jjoe64.graphview.CustomLabelFormatter;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.GraphViewSeries;
-import com.jjoe64.graphview.LineGraphView;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONStringer;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.logging.Logger;
 
 import se.racetime.homeautomation.adapter.TabsPagerAdapter;
 

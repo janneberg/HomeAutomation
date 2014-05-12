@@ -1,25 +1,17 @@
 package se.racetime.homeautomation.app;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jjoe64.graphview.CustomLabelFormatter;
 import com.jjoe64.graphview.GraphView;
@@ -40,6 +32,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import se.racetime.homeautomation.Com.Json;
 
 public class TemperatureFragment extends Fragment implements View.OnClickListener
 {
@@ -152,41 +146,6 @@ public class TemperatureFragment extends Fragment implements View.OnClickListene
         new ReadTemperatureJSONFeedTask(HttpTask.basic).execute("http://racetime.no-ip.org:8080/tellstickservice/Temperature");
     }
 
-    public String readJSONFeed(String URL)
-    {
-        StringBuilder stringBuilder = new StringBuilder();
-        HttpClient httpClient = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet(URL);
-        try
-        {
-            HttpResponse response = httpClient.execute(httpGet);
-            StatusLine statusLine = response.getStatusLine();
-            int statusCode = statusLine.getStatusCode();
-            if (statusCode == 200)
-            {
-                HttpEntity entity = response.getEntity();
-                InputStream inputStream = entity.getContent();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null)
-                {
-                    stringBuilder.append(line);
-                }
-                inputStream.close();
-            }
-            else
-            {
-                Log.d("JSON", "Failed to download file");
-            }
-        }
-        catch (Exception e)
-        {
-            Log.d("readJSONFeed", e.getLocalizedMessage());
-        }
-        return stringBuilder.toString();
-    }
-
     private class ReadTemperatureJSONFeedTask extends AsyncTask<String, Void, String>
     {
         private HttpTask httpTask;
@@ -198,7 +157,8 @@ public class TemperatureFragment extends Fragment implements View.OnClickListene
 
         protected String doInBackground(String... urls)
         {
-            return readJSONFeed(urls[0]);
+            Json json = new Json();
+            return json.readJSONFeed(urls[0]);
         }
 
         protected void onPostExecute(String result)
@@ -225,7 +185,7 @@ public class TemperatureFragment extends Fragment implements View.OnClickListene
 
                 GraphView.GraphViewData graphViewData[] = new GraphView.GraphViewData[jsonArray.length()];
 
-                for(int i = 0; i < jsonArray.length(); i++)
+                for(int i = jsonArray.length() - 1; i > 0; i--)
                 {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     String sensorId = jsonObject.getString("sensorId");

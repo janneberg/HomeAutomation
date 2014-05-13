@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,8 +56,10 @@ public class TelephoneFragment extends Fragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                //String item = lstViewPhone.gett.view.((GridView) view).getItemAtPosition(position).te.getText().toString();
-                Toast.makeText(activity.getBaseContext(), "Clicked", Toast.LENGTH_LONG).show();
+                HashMap item = list.get(position);
+                String phoneNumber = item.get(FIRST).toString();
+
+                Toast.makeText(activity.getBaseContext(), "Clicked " + phoneNumber, Toast.LENGTH_LONG).show();
             }
         });
 
@@ -87,12 +88,12 @@ public class TelephoneFragment extends Fragment
                 if(httpTask == HttpTask.standard)
                     UpdatePhoneList(result);
                 else if(httpTask == HttpTask.specific)
-                    UpdateAllTemperatures(result);
+                    UpdatePhoneNumber(result);
 
             }
             catch (Exception e)
             {
-                Log.d("ReadTemperatureJSONFeedTask", e.getLocalizedMessage());
+                Log.d("ReadPhoneListJSONFeedTask", e.getLocalizedMessage());
             }
         }
 
@@ -128,11 +129,11 @@ public class TelephoneFragment extends Fragment
             }
             catch (Exception e)
             {
-                Log.d("ReadTemperatureJSONFeedTask", e.getLocalizedMessage());
+                Log.d("ReadPhoneListJSONFeedTask", e.getLocalizedMessage());
             }
         }
 
-        private void UpdateAllTemperatures(String result)
+        private void UpdatePhoneNumber(String result)
         {
             try
             {
@@ -141,34 +142,12 @@ public class TelephoneFragment extends Fragment
                 for(int i = 0; i < jsonArray.length(); i++)
                 {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    String sensorId = jsonObject.getString("sensorId");
-                    String temperature = jsonObject.getString("temperature");
-                    String humidity = jsonObject.getString("humidity");
-                    String createdDate = jsonObject.getString("createDate");
-
-                    TextView textViewTotal = null;
-                    if(sensorId.contains("140"))
-                        textViewTotal = (TextView) view.findViewById(R.id.textViewTempOutside2);
-                    else if(sensorId.contains("139"))
-                        textViewTotal = (TextView) view.findViewById(R.id.textViewTempUnderhouse);
-                    else if(sensorId.contains("180"))
-                        textViewTotal = (TextView) view.findViewById(R.id.textViewTempPadio);
-                    else if(sensorId.contains("9"))
-                        textViewTotal = (TextView) view.findViewById(R.id.textViewTempAttic);
-                    else if(sensorId.contains("151"))
-                        textViewTotal = (TextView) view.findViewById(R.id.textViewTempInside);
-                    else if(sensorId.contains("181"))
-                        textViewTotal = (TextView) view.findViewById(R.id.textViewTempOutside1);
-                    else if(sensorId.contains("43"))
-                        textViewTotal = (TextView) view.findViewById(R.id.textViewTempBasement);
-
-                    if(textViewTotal != null)
-                        textViewTotal.setText(temperature);
+                    String logDate = jsonObject.getString("logDate");
                 }
             }
             catch (Exception e)
             {
-                Log.d("ReadTemperatureJSONFeedTask", e.getLocalizedMessage());
+                Log.d("ReadPhoneListJSONFeedTask", e.getLocalizedMessage());
             }
         }
     }

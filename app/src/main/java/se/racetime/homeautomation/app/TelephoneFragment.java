@@ -8,8 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -46,8 +49,19 @@ public class TelephoneFragment extends Fragment
     {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_telephone, container, false);
-
+        lstViewPhone = (ListView) view.findViewById(R.id.listViewPhone);
         new ReadPhoneListJSONFeedTask(HttpTask.standard).execute("http://racetime.no-ip.org:8080/tellstickservice/Phone");
+
+        lstViewPhone.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                //String item = lstViewPhone.gett.view.((GridView) view).getItemAtPosition(position).te.getText().toString();
+                Toast.makeText(activity.getBaseContext(), "Clicked", Toast.LENGTH_LONG).show();
+            }
+        });
+
         return view;
     }
 
@@ -106,7 +120,6 @@ public class TelephoneFragment extends Fragment
                     list.add(item);
                 }
 
-                lstViewPhone = (ListView) view.findViewById(R.id.listViewPhone);
                 adapter = new TellstickServiceAdapter(activity, list);
                 lstViewPhone.setAdapter(adapter);
 

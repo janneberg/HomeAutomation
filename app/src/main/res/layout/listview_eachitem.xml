@@ -17,7 +17,8 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:layout_column="0"
-        android:layout_row="0" />
+        android:layout_row="0"
+        android:width="250px"/>
 
     <TextView
         android:id="@+id/textViewDateTime"
@@ -28,7 +29,7 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:layout_column="1"
-        android:layout_row="0" />
+        android:layout_row="0"/>
 
     <TextView
         android:id="@+id/textViewName"
@@ -39,6 +40,7 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:layout_column="0"
-        android:layout_row="1" />
+        android:layout_row="1"
+        android:width="250px"/>
 
 </GridLayout>

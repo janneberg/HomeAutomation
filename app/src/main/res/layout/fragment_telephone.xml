@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="se.racetime.homeautomation.app.TelephoneFragment"
-
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
@@ -13,11 +12,32 @@
     android:useDefaultMargins="false">
 
     <ListView
-        android:layout_width="wrap_content"
+        android:layout_width="500px"
         android:layout_height="wrap_content"
         android:id="@+id/listViewPhone"
         android:layout_column="0"
         android:layout_row="0"
-        android:layout_columnSpan="2"
-        android:layout_rowSpan="4" />
+        android:layout_columnSpan="1"
+        android:layout_rowSpan="4"/>
+
+    <ListView
+        android:layout_width="400px"
+        android:layout_height="wrap_content"
+        android:id="@+id/listViewDetails"
+        android:layout_column="2"
+        android:layout_row="1"
+        android:layout_columnSpan="1"
+        android:layout_rowSpan="3"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Small Text"
+        android:id="@+id/textViewDetails"
+        android:layout_column="2"
+        android:layout_row="0"
+        android:layout_columnSpan="1"
+        android:layout_rowSpan="1"/>
+
 </GridLayout>

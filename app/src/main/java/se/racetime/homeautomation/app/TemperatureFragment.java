@@ -37,21 +37,17 @@ import se.racetime.homeautomation.Com.Json;
 
 public class TemperatureFragment extends Fragment implements View.OnClickListener
 {
+    enum HttpTask { basic, idHour };
+
     Activity activity;
     View view;
-    //Button btnUpdate, btnTempAttic;
-
-    enum HttpTask { basic, idHour };
     GraphView graphView;
-    float x1,x2;
-    float y1, y2;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         activity = getActivity();
-
         graphView = new LineGraphView(activity, "Temperature");
     }
 
@@ -136,9 +132,6 @@ public class TemperatureFragment extends Fragment implements View.OnClickListene
                 new ReadTemperatureJSONFeedTask(HttpTask.idHour).execute("http://racetime.no-ip.org:8080/tellstickservice/Temperature/139/12");
                 break;
         }
-
-        //int number = Integer.parseInt(text.toString());
-        //total += number;
     }
 
     public void onButtonUpdatePress(View v)
@@ -211,8 +204,6 @@ public class TemperatureFragment extends Fragment implements View.OnClickListene
                 graphView.getGraphViewStyle().setNumHorizontalLabels(5);
                 graphView.getGraphViewStyle().setNumVerticalLabels(5);
                 graphView.getGraphViewStyle().setVerticalLabelsWidth(20);
-                //graphView.setManualYAxis(true);
-                //graphView.setManualYAxisBounds(20.0, -5);
                 graphView.setTitle("");
 
                 // date as label formatter
@@ -255,7 +246,7 @@ public class TemperatureFragment extends Fragment implements View.OnClickListene
                     String createdDate = jsonObject.getString("createDate");
 
                     TextView textViewTotal = null;
-                    if(sensorId == "140")
+                    if(sensorId.contains("140"))
                         textViewTotal = (TextView) view.findViewById(R.id.textViewTempOutside2);
                     else if(sensorId.contains("139"))
                         textViewTotal = (TextView) view.findViewById(R.id.textViewTempUnderhouse);

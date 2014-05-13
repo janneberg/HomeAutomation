@@ -1,7 +1,6 @@
 package se.racetime.homeautomation.app;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,30 +8,28 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.jjoe64.graphview.CustomLabelFormatter;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.GraphViewSeries;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 import se.racetime.homeautomation.Com.Json;
 import se.racetime.homeautomation.adapter.TellstickServiceAdapter;
+
+import static se.racetime.homeautomation.Util.Constant.FIRST;
+import static se.racetime.homeautomation.Util.Constant.SECOND;
+import static se.racetime.homeautomation.Util.Constant.THIRD;
 
 public class TelephoneFragment extends Fragment
 {
     Activity activity;
     View view;
     ListView lstViewPhone;
+    TellstickServiceAdapter adapter;
     enum HttpTask { standard, specific };
     private ArrayList<HashMap> list;
 
@@ -41,6 +38,7 @@ public class TelephoneFragment extends Fragment
     {
         super.onCreate(savedInstanceState);
         activity = getActivity();
+        list = new ArrayList<HashMap>();
     }
 
     @Override
@@ -49,12 +47,7 @@ public class TelephoneFragment extends Fragment
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_telephone, container, false);
 
-        lstViewPhone = (ListView) view.findViewById(R.id.listViewPhone);
-
-        //populateList();
-        TellstickServiceAdapter adapter = new TellstickServiceAdapter(activity, list);
-        lstViewPhone.setAdapter(adapter);
-
+        new ReadPhoneListJSONFeedTask(HttpTask.standard).execute("http://racetime.no-ip.org:8080/tellstickservice/Phone");
         return view;
     }
 
@@ -78,7 +71,7 @@ public class TelephoneFragment extends Fragment
             try
             {
                 if(httpTask == HttpTask.standard)
-                    UpdateTemperatureDiagram(result);
+                    UpdatePhoneList(result);
                 else if(httpTask == HttpTask.specific)
                     UpdateAllTemperatures(result);
 
@@ -89,7 +82,7 @@ public class TelephoneFragment extends Fragment
             }
         }
 
-        private void UpdateTemperatureDiagram(String result)
+        private void UpdatePhoneList(String result)
         {
             try
             {
@@ -98,22 +91,24 @@ public class TelephoneFragment extends Fragment
                 for(int i = 0; i < jsonArray.length(); i++)
                 {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    String sensorId = jsonObject.getString("sensorId");
-                    String temperature = jsonObject.getString("temperature");
-                    String humidity = jsonObject.getString("humidity");
+                    String logDate = jsonObject.getString("logDate");
+                    String phoneNumber = jsonObject.getString("phoneNumber");
+
+                    JSONObject name = jsonObject.getJSONObject("name");
+                    String firstName = name.getString("firstName");
+                    String lastName = name.getString("lastName");
 
                     HashMap<String, String> item = new HashMap<String, String>();
+                    item.put(FIRST, phoneNumber);
+                    item.put(SECOND, firstName + " " + lastName);
+                    item.put(THIRD, logDate);
 
-
-                    //item.put()
-
-                    String createdDate = jsonObject.getString("createDate");
-
-
-
+                    list.add(item);
                 }
 
-                //list
+                lstViewPhone = (ListView) view.findViewById(R.id.listViewPhone);
+                adapter = new TellstickServiceAdapter(activity, list);
+                lstViewPhone.setAdapter(adapter);
 
                 //LinearLayout layout = (LinearLayout) view.findViewById(R.id.test);
                 //layout.addView(graphView);
@@ -139,7 +134,7 @@ public class TelephoneFragment extends Fragment
                     String createdDate = jsonObject.getString("createDate");
 
                     TextView textViewTotal = null;
-                    if(sensorId == "140")
+                    if(sensorId.contains("140"))
                         textViewTotal = (TextView) view.findViewById(R.id.textViewTempOutside2);
                     else if(sensorId.contains("139"))
                         textViewTotal = (TextView) view.findViewById(R.id.textViewTempUnderhouse);
